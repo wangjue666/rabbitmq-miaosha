@@ -1,12 +1,12 @@
-package main
+// package main
 
-import (
-	_ "fmt"
-	RabbitMQ "rabbitmq-miaosha/rabbitmq"
-)
+// import (
+// 	_ "fmt"
+// 	RabbitMQ "rabbitmq-miaosha/rabbitmq"
+// )
 
-func main() {
-	rabbitmq := RabbitMQ.NewRabbitMQSimple("blue")
+// func main() {
+// 	rabbitmq := RabbitMQ.NewRabbitMQSimple("blue")
 
-	rabbitmq.ConsumeSimple()
-}
+// 	rabbitmq.ConsumeSimple()
+// }

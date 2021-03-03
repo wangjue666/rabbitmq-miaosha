@@ -1,14 +1,14 @@
-package main
+// package main
 
-import (
-	"fmt"
-	RabbitMQ "rabbitmq-miaosha/rabbitmq"
-)
+// import (
+// 	"fmt"
+// 	RabbitMQ "rabbitmq-miaosha/rabbitmq"
+// )
 
-func main() {
-	rabbitmq := RabbitMQ.NewRabbitMQSimple("blue")
+// func main() {
+// 	rabbitmq := RabbitMQ.NewRabbitMQSimple("blue")
 
-	rabbitmq.PublishSimple("hello wangjue!")
+// 	rabbitmq.PublishSimple("hello wangjue!")
 
-	fmt.Println("生产者发送消息成功")
-}
+// 	fmt.Println("生产者发送消息成功")
+// }
