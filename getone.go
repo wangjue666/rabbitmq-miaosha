@@ -1,10 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"rabbitmq-miaosha/datamodels"
+	RabbitMQ "rabbitmq-miaosha/rabbitmq"
 	"sync"
+	"time"
 )
 
 var sum int64 = 0
@@ -45,8 +49,27 @@ func GetProduct(w http.ResponseWriter, req *http.Request) {
 	return
 }
 
+var rabbitmq = RabbitMQ.NewRabbitMQSimple("blue")
+
+func GetOrder(w http.ResponseWriter, req *http.Request) {
+	const userId = 9527
+	const productId = 10086
+	timeUnix := time.Now().Unix()
+	//创建消息体
+	message := datamodels.NewMessage(userId, productId, timeUnix)
+	byteMessage, err := json.Marshal(message)
+	if err != nil {
+		panic(err)
+	}
+
+	rabbitmq.PublishSimple(string(byteMessage))
+
+	w.Write([]byte("true"))
+}
+
 func main() {
 	http.HandleFunc("/getOne", GetProduct)
+	http.HandleFunc("/getOrder", GetOrder)
 	err := http.ListenAndServe(":8084", nil)
 	if err != nil {
 		log.Fatal("Err:", err)
