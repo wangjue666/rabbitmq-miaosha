@@ -1,9 +1,12 @@
 package rabbitmq
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/streadway/amqp"
 	"log"
+	"rabbitmq-miaosha/datamodels"
+
+	"github.com/streadway/amqp"
 )
 
 const MQURL = "amqp://admin:123456@192.168.1.175:5672/blue"
@@ -94,10 +97,16 @@ func (r *RabbitMQ) ConsumeSimple() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	//消费者流控
+	r.channel.Qos(
+		1,     //当前消费者一次能接受的最大消息数量
+		0,     //服务器传递的最大容量（以八位字节为单位）
+		false, //如果设置为true 对全局channel可用
+	)
 	msgs, err := r.channel.Consume(
 		r.QueueName,
 		"",    //区分多个消费者
-		true,  //是否自动应答处理完成消息
+		false, //是否自动应答处理完成消息
 		false, //是否独占
 		false, // 同一个connection 中发送的消息 可传递给 同一个connection中的消费者
 		false, // 是否阻塞
@@ -113,6 +122,15 @@ func (r *RabbitMQ) ConsumeSimple() {
 	go func() {
 		for d := range msgs {
 			log.Printf("receive a msg: %s", d.Body)
+			message := &datamodels.Message{}
+			err := json.Unmarshal([]byte(d.Body), message)
+			if err != nil {
+				fmt.Println(err)
+			}
+			// 之后再执行数据库 插入订单 和 扣除商品数量 的逻辑
+
+			//如果为true表示确认所有未确认的消息， 为false表示确认当前消息
+			d.Ack(false)
 		}
 	}()
 
